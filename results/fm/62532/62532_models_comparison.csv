@@ -1,0 +1,10 @@
+,GT,Flow,IS,IS2noITF,IS2
+osc1_wave,sawtooth,sawtooth,sawtooth,sawtooth,sawtooth
+osc1_freq,698.4565,698.4565,698.4565,698.4565,698.4565
+osc1_mod_index,0.0158,0.0158,0.0158,0.0158,0.0158
+lfo1_freq,13.5,13.5,13.5,13.5,13.5
+lfo1_wave,triangle,triangle,triangle,sine,triangle
+am_mod_wave,sawtooth,none,square,none,none
+am_mod_freq,6.0,1.0,1.0,1.0,1
+am_mod_amount,0.0,0.0,0.0,0.0,0.0
+filter_freq,4356.2667,4356.2667,4356.2667,4356.2667,4356.2667

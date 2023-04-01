@@ -1,0 +1,6 @@
+Model,x3_FilterCutoff,x24_Osc2Waveform,x20_Osc2Tune,x26_Lfo1Waveform,x28_Lfo1Rate,x30_Lfo1Amount,x27_Lfo2Waveform,x29_Lfo2Rate,x31_Lfo2Amount
+Flow,0.626666667,0.5,0.25,0.6,0.312,0.968,0,0,0.5
+GT,0.626666667,0.5,0.25,0.6,0.312,1,0,0,0.5
+IS,0.58,0.5,0.25,0.6,0.312,1,0,0,0.5
+IS2,0.626666667,0.5,0.25,0.6,0.312,1,0,0,0.5
+IS2xITF,0.58,0.5,0.25,0.6,0.312,1,0,0,0.5

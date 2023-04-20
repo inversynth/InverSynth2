@@ -148,7 +148,6 @@ for i in tqdm(range(num_sounds)):
     wavs = my_synth.my_generate_signal(1)
     s = np.squeeze(wavs.detach().cpu().numpy())
     write(r'data/for_test/Data_custom_synth/%d.wav' % file_name, SAMPLE_RATE, s)
-    # Noy_Synth_Wavs
 
 
 print('DONE')

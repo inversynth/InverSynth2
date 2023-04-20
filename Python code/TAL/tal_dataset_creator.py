@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 NUM_ACTIVE_OSC = [1, 2]
 
-# adams random params
+# random params
 OSC_VOLUME_LIST = [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1]
 OSC_TUNE_LIST = [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1]
 OSC1WAVEFORM_LIST = [0, 0.5]
@@ -34,8 +34,8 @@ class Config:
     buffer_size = 128  # Parameters will undergo automation at this block size. It can be as small as 1 sample.
     # synth_plugin = r"libTAL-NoiseMaker.so"
     # synth_plugin = r"Dexed.so"
-    synth_plugin = r'/home/adams/PycharmProjects/commercial_synth_dataset/libTAL-NoiseMaker.so'
-    synth_preset = r"/home/adams/PycharmProjects/commercial_synth_dataset/presets/80sBrass_-_01.fxp"
+    synth_plugin = r'/home/PycharmProjects/commercial_synth_dataset/libTAL-NoiseMaker.so'
+    synth_preset = r"/home/PycharmProjects/commercial_synth_dataset/presets/80sBrass_-_01.fxp"
     duration = 1  # How many seconds we want to render.
     midi_note = 70  # 70 is middle A (A4 - 440Hz)
     velocity = 127
@@ -47,9 +47,9 @@ class Config:
     disable_effects = True
     fix_non_timbral_parameters = True
     mono = True
-    adam_csv_filename = '/home/adams/PycharmProjects/Tal/full_parameters_osc_lfo_am_debug.csv'
-    full_csv_filename = '/home/adams/PycharmProjects/Tal/full_parameters_osc_lfo_am_debug.csv'
-    save_folder = '/home/adams/PycharmProjects/Tal/sounds_debug/'
+    csv_filename = '/home/PycharmProjects/Tal/full_parameters_osc_lfo_am_debug.csv'
+    full_csv_filename = '/home/PycharmProjects/Tal/full_parameters_osc_lfo_am_debug.csv'
+    save_folder = '/home/PycharmProjects/Tal/sounds_debug/'
     synth_version = 5  # Tal-NoiseMaker may be old version (4) or new version (5)
 
 
@@ -137,7 +137,7 @@ def check_sound_identity(sounds: dict):
         print(np.linalg.norm(sounds[i] - sounds[i + 1]))
 
 
-def randomize_adam_params(synth):
+def randomize_params(synth):
     synth.set_parameter(24, np.random.choice(OSC2WAVEFORM_LIST))  # Osc 2 Waveform
     synth.set_parameter(26, np.random.choice(LFO_WAVEFORM_LIST))  # Lfo 1 Waveform
     synth.set_parameter(32, np.random.choice(LFO1DESTINATION_LIST, p=[0.1, 0.9]))  # Lfo 1 Destination
@@ -383,7 +383,7 @@ def my_randomize_params_debug(N, opt='osc_only'):  # 'osc_only' / 'osc_with_lfo'
     return dic, variable_params
 
 
-def set_adam_params(synth,
+def set_params(synth,
                       osc2waveform,
                       lfo1waveform,
                       lfo1destination,
@@ -415,7 +415,7 @@ def set_params(synth, params):
         # param_idx += 1
 
 
-def set_adams_non_randomized_params(synth):
+def set_non_randomized_params(synth):
     synth.set_parameter(0, 0)  # -
     synth.set_parameter(1, 1)  # Master Volume
     synth.set_parameter(6, 0.5)  # Filter Contour
@@ -453,13 +453,13 @@ def set_non_randomized_params(synth):
     synth.set_parameter(65, 1)  # Osc Bitcrusher
 
 
-def format_adam_csv(data_frame):
+def format_csv(data_frame):
     # "-1" stands for the prepended column "wav_id"
-    adam_params_indices = [-1, 24, 26, 32, 30, 28, 3, 4]
-    return data_frame.iloc[:, list(np.asarray(adam_params_indices) + 1)]
+    params_indices = [-1, 24, 26, 32, 30, 28, 3, 4]
+    return data_frame.iloc[:, list(np.asarray(params_indices) + 1)]
 
 
-def create_adam_csv(cfg, synth_plugin_path, dataset_dict):
+def create_csv(cfg, synth_plugin_path, dataset_dict):
     print(f"\nGenerating Dataset Using {cfg.synth_plugin}\n")
     for i in range(cfg.dataset_size):
         engine = daw.RenderEngine(cfg.sample_rate, cfg.buffer_size)
@@ -473,16 +473,16 @@ def create_adam_csv(cfg, synth_plugin_path, dataset_dict):
 
         np.random.seed(i)
         reset_all_params(synth)
-        randomize_adam_params(synth)
-        set_adams_non_randomized_params(synth)
+        randomize_params(synth)
+        set_non_randomized_params(synth)
         # print_synth_params(synth)
         print(f"randomized parameters for sound {i + 1}/{cfg.dataset_size}")
         dataset_dict['wav_id'].append(i)
         insert_synth_params_to_dataset(synth, dataset_dict)
 
     data_frame = pd.DataFrame(dataset_dict)
-    adams_data_frame = format_adam_csv(data_frame)
-    adams_data_frame.to_csv(cfg.adam_csv_filename, index=False)
+    data_frame = format_csv(data_frame)
+    data_frame.to_csv(cfg.csv_filename, index=False)
     data_frame.to_csv(cfg.full_csv_filename, index=False)
 
 
@@ -535,8 +535,8 @@ def my_create_csv(cfg, debug):
         data_frame.to_csv(f'short_params_{debug}.csv', index=False)
 
 
-def read_adam_csv_and_generate_audio(cfg, synth_plugin_path):
-    dataframe = pd.read_csv(cfg.adam_csv_filename)
+def read_csv_and_generate_audio(cfg, synth_plugin_path):
+    dataframe = pd.read_csv(cfg.csv_filename)
     sounds = {}
 
     for _, row in dataframe.iterrows():
@@ -570,7 +570,7 @@ def read_adam_csv_and_generate_audio(cfg, synth_plugin_path):
             filter_resonance = row['4.resonance']
 
         reset_all_params(synth)
-        set_adam_params(synth,
+        set_params(synth,
                           osc2waveform=osc2waveform,
                           lfo1waveform=lfo1waveform,
                           lfo1destination=lfo1destination,
@@ -578,7 +578,7 @@ def read_adam_csv_and_generate_audio(cfg, synth_plugin_path):
                           lfo1rate=lfo1rate,
                           filter_cutoff=filter_cutoff,
                           filter_resonance=filter_resonance)
-        set_adams_non_randomized_params(synth)
+        set_non_randomized_params(synth)
         print_synth_params(synth)
         synth.add_midi_note(cfg.midi_note, cfg.velocity, cfg.start_sec, cfg.note_duration)
         engine.render(cfg.duration)
@@ -652,8 +652,8 @@ def run():
     init_dataset_dict(synth, dataset_dict)
     # print_synth_params(synth)
 
-    # create_adam_csv(cfg, synth_plugin_path, dataset_dict)
-    # read_adam_csv_and_generate_audio(cfg, synth_plugin_path)
+    # create_csv(cfg, synth_plugin_path, dataset_dict)
+    # read_csv_and_generate_audio(cfg, synth_plugin_path)
     if FLAG_CREATE_DATA:
         my_create_csv(cfg, FLAG_DEBUG)
     read_csv_and_generate_audio(cfg, synth_plugin_path)
